@@ -159,7 +159,24 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 	pose_publisher.publish(pMsg);
 }
 
+void SaveKeyFrameGraph(KeyFrameGraph *graph) {
+	std::cout << "SaveKeyFrameGraph\n";
+	std::ofstream fout("reconstruction.txt");
 
+	graph->keyframesAllMutex.lock_shared();
+
+	fout << graph->keyframesAll.size() << std::endl;
+
+	for (unsigned int i=0; i<graph->keyframesAll.size(); i++)
+	{
+		fout << i << " " << graph->keyframesAll[i]->id() << std::endl;
+		Sim3 pose = graph->keyframesAll[i]->getScaledCamToWorld();
+		Eigen::Matrix<double,3,3> rotation = pose.rotationMatrix();
+		fout << rotation << std::endl;
+		fout << pose.translation() << std::endl;
+	}
+	graph->keyframesAllMutex.unlock_shared();
+}
 
 void ROSOutput3DWrapper::publishKeyframeGraph(KeyFrameGraph* graph)
 {
@@ -190,6 +207,7 @@ void ROSOutput3DWrapper::publishKeyframeGraph(KeyFrameGraph* graph)
 	graph->keyframesAllMutex.unlock_shared();
 
 	graph_publisher.publish(gMsg);
+	SaveKeyFrameGraph(graph);
 }
 
 void ROSOutput3DWrapper::publishTrajectory(std::vector<Eigen::Matrix<float, 3, 1>> trajectory, std::string identifier)
