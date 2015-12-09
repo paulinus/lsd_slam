@@ -161,7 +161,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 
 void SaveKeyFrameGraph(KeyFrameGraph *graph) {
 	std::cout << "SaveKeyFrameGraph\n";
-	std::ofstream fout("reconstruction.txt");
+	std::ofstream fout("poses.txt");
 
 	graph->keyframesAllMutex.lock_shared();
 
